@@ -1000,59 +1000,54 @@ cjxkxsgmql4xxgjtpdcbmsixeight
 739
 `;
 
-const result = doc.split(/\r?\n/);
+const input = doc.split("\n");
 
-const test = "xtwone3four";
-
-const numbers = [
-  "zero",
-  "one",
-  "two",
-  "three",
-  "four",
-  "five",
-  "six",
-  "seven",
-  "eight",
-  "nine",
-];
-
-const twoDigits = () => {
-  const digits = [];
-  for (let i = 0; i < numbers.length; i++) {
-    if (test.includes(numbers[i])) digits.push(numbers[i]);
-  }
-  console.log(digits)
-}
-
-twoDigits()
-
-
-const calibrationSum = (input) => {
-  const lines = input.map((line) => line.split(""));
-  const numericCharArray = [];
-  lines.forEach((subArray) => {
-    const numericChar = subArray.filter(
-      (char) => !isNaN(char) && char.trim("") !== ""
-    );
-    if (numericChar.length > 0) {
-      numericCharArray.push(numericChar);
-    }
-  });
-  const twoDigitArray = [];
-  numericCharArray.map((arr) => {
-    const firstElement = arr[0];
-    const lastElement = arr[arr.length - 1];
-    if (arr.length > 1) {
-      twoDigitArray.push(parseInt(firstElement + lastElement));
-    } else if (arr.length === 1) {
-      twoDigitArray.push(parseInt(firstElement + firstElement));
-    }
-  });
-  const finalResult = twoDigitArray.reduce((acc, curr) => acc + curr, 0);
-  console.log(finalResult);
+const numbersMap = {
+  one: 1,
+  two: 2,
+  three: 3,
+  four: 4,
+  five: 5,
+  six: 6,
+  seven: 7,
+  eight: 8,
+  nine: 9,
 };
 
+//loop through lines
+//inside that loop, loop through each line to check for regex matches
+//push matches to numbers array
+//sort the array
+//create the first and last digits to form two digit numbers and sum them
+
+let result = 0;
+for (const lines of input) {
+  const numbers = [];
+  for (const [key, value] of Object.entries(numbersMap)) {
+    numbers.push(
+      ...Array.from(lines.matchAll(new RegExp(key, "g")), (match) => ({
+        value,
+        index: match.index,
+      })),
+      ...Array.from(
+        lines.matchAll(new RegExp(value.toString(), "g")),
+        (match) => ({
+          value,
+          index: match.index,
+        })
+      )
+    );
+  }
+  numbers.sort((a, b) => a.index - b.index);
+  if (numbers.length) {
+    const firstNumber = numbers[0].value;
+    const lastNumber =
+      numbers.length > 1 ? numbers[numbers.length - 1].value : firstNumber;
+    result += parseInt(`${firstNumber}${lastNumber}`);
+  }
+}
+
+console.log(result);
 //need to find first and last occurences of numbers in each line
 //each line is a string, so indexOf and lastIndexOf doesn't work
 //this means need to find a way to convert the string numbers into numbers
